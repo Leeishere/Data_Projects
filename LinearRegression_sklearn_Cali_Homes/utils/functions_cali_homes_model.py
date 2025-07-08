@@ -28,42 +28,87 @@ def cap_max_w_nan(data,to_cap={'column_name':'maximum value'}):
 
 # fill nan function that considers surrounding rows
 
-def neighbor_fillna(most_important_features,dataframe,window_size):
+
+def neighbor_fillna(sortable_features,dataframe,window_size=16,nan_fill_columns=None,truncate_map=None):
     '''
-    neighbors with nan will be filtered out prior to sorting. Hence, it is necessary to consider the relations of neighbor nans to each column
-    This is iterative, so may not be ideal when fast performance is needed
-    most_important_features is a list of features, ordered from most to least important
-    window_size: averages will be taken from the center of the window, it should be >3
-    returns a modified datafram
+    (sortable_features,dataframe,window_size=16,nan_fill_columns=None,truncate_map=None)
+    rough approximation based on enwighted neighbors
+    returns dataframe with a new index    
     '''
 
+    def _are_upper_and_lower(aual_index,d_a_t_a_f_r,index_not_present=True):#input index, dataframe and include_index T/F
+        ''' if index_not_present, it manually filters the index row out of the calculation
+        otherwise the upper row (sorted ascending) should be used
+        returns T/F that there is more than 1 row on each side of the index'''
+        lesser_rows=d_a_t_a_f_r.iloc[:aual_index,:].shape[0]
+        if index_not_present:greater_rows=d_a_t_a_f_r.iloc[aual_index:,:].shape[0]   #hence the upper row should be used
+        else:greater_rows=d_a_t_a_f_r.iloc[aual_index+1:,:].shape[0]              #manually filter the index
+        return lesser_rows>1 and greater_rows>1
+
+    dataframe['sort_col']=pd.rolling().count()
+
+    ###try window_siz>3 accept as   ### in order to ensure it is over 3
     null_counts=dataframe.isnull().sum()
     columns_w_null=null_counts.loc[null_counts.values>0].index   #a list of columns with nulls
     
-    for null_col in columns_w_null:
-        sort_cols=[col for col in most_important_features if col != null_col] 
-        for feature in sort_cols:  
-            if feature == 'Target':                                                     
-                dataframe['temp']=dataframe['Target']                                       # create a temp column to store the original target because we dont want to return a modified target
-                dataframe['Target']=dataframe['Target'].apply(lambda x: round(x,2))          #round target to 10 thousands place so that there is more influence from other 'feature' columns.                             
-            dataframe=dataframe.loc[~dataframe[feature].isnull()]                     #filter out features with nan
-        sorted_df=dataframe.sort_values(by=sort_cols).reset_index(drop=True)          # a sorted dataframe based on important features (not the column we are targeting with fill values in this iteration)
-        nan_indexes=sorted_df.loc[sorted_df[null_col].isnull()].index                        # these are the indexes we sort through to fill nans
-        df=sorted_df
-        half_size=window_size//2
-        for index in nan_indexes:
-            half_size=min(half_size,df.shape[0]-index-1,index)       #calculate window sizes at top and bottom rows of the df by shrinking window, such that it remains centered
-            sum_first_half=df.loc[max(0,index-half_size):index,null_col].sum()
-            sum_second_half=df.loc[index+1:index+half_size+1,null_col].sum()
-            two_halves_sum=sum_first_half+sum_second_half                                                                               # sum of values on both sides of target
-            two_halves_len=len(df.loc[max(0,index-half_size):index,null_col])+len(df.loc[index+1:index+half_size+1,null_col])      #number of values on both sides
-            fill_value=two_halves_sum/two_halves_len                                                                                    # average value in the window ===> the fill value
-            df.loc[index,null_col]=fill_value                                           # fill the nan cell
-            dataframe=df
-    dataframe['Target']=dataframe['temp']                  # restore column name
-    dataframe.drop(columns='temp',inplace=True)
-    return dataframe
+    dataframe['temp_sort_col']=np.array([i for i in range(1,dataframe.shape[0]+1)])
+    dataframe=dataframe.sort_values(by=sortable_features).reset_index(drop=True)#this creates ordered indexing that will be used throughout
+    dataframe=dataframe.sort_values(by=sortable_features).reset_index(drop=False)#keep the index, it will be in lookup_df.iloc[:,0]
+    
+    lookup_df=dataframe.copy()
+    if truncate_map:
+        for trunc_feature, func in truncate_map.items():
+            if trunc_feature in lookup_df.columns:
+                lookup_df[trunc_feature]=lookup_df[trunc_feature].apply(lambda x: np.nan if pd.isna(x) else func(x))# no need to worry about nan, it was excluded 2 lines ago
 
+    if nan_fill_columns: columns_w_null=nan_fill_columns
+    for null_col in columns_w_null:
+        sort_cols=[col for col in sortable_features if col != null_col]
+        for feature in sort_cols:                                                       #filter features with nan
+            lookup_df=lookup_df.loc[~(dataframe[feature].isnull())]
+
+
+#resort after removing nan
+        lookup_df=lookup_df.sort_values(by=sort_cols).reset_index(drop=True)         # a lookup dataframe sorted by features (excluding the column we fill this iteration)
+        nan_indexes=lookup_df.loc[lookup_df[null_col].isnull()].index         # these are the indexes of the lookup_df where there are nans to fill
+
+        
+        for i,index in enumerate(nan_indexes):
+
+            #ensure there are enough rows on each side
+            if _are_upper_and_lower(index,lookup_df,0):   #function defined above, 0 indicates the index should be filtered inside the function
+
+                #capture the index fill row index from the original data frame
+                fill_index_location_on_dataframe=lookup_df.iat[index,0]
+
+                #exclude all fill rows from calculations
+                ### RENAME lookup_df to filtered_lookup
+                filtered_lookup=lookup_df.loc[~(lookup_df[null_col].isna())]
+
+                #calculate the position of the index relative to the df it has been filtered out of: filtered_lookup
+                lower_neighbor=index-len(nan_indexes[:i])
+                upper_neighbor=lower_neighbor+1            
+
+                #ensure still enough rows on each side
+                if _are_upper_and_lower(upper_neighbor,filtered_lookup):    #function defined above, the upper neighbor should be used
+                    # base window on user input
+                    half_size=window_size//2
+                    #calculate window sizes at ends by shrinking window according to the edge
+                    if lower_neighbor-half_size<0 or upper_neighbor+half_size>filtered_lookup.index[-1]:
+                        half_size=min(lower_neighbor,filtered_lookup.index[-1]-upper_neighbor)
+
+
+                    #sum both window halves for the col to fill                    
+                    two_halves_sum=filtered_lookup.loc[lower_neighbor-half_size+1:upper_neighbor+half_size-1,null_col].sum() 
+                    #divide by number of rows
+                    two_halves_len=half_size*2
+                    fill_value=two_halves_sum/two_halves_len     # average value in the window ===> the fill value
+                    dataframe.loc[dataframe.index==fill_index_location_on_dataframe,null_col]=fill_value
+
+    dataframe=dataframe.sort_values(by=['temp_sort_col']).reset_index(drop=True)
+    dataframe.drop(columns='temp_sort_col',inplace=True)
+    dataframe.drop(dataframe.columns[0], axis=1,inplace=True)
+    return dataframe
 
 # CREATE LATITUDE AND LONGITUDE BINS (RESPECTIVELY)
 # a function to create bins for latitude and longitude
