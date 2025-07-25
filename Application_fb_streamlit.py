@@ -1,8 +1,8 @@
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+#import seaborn as sns
+#import matplotlib.pyplot as plt
 import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
@@ -20,7 +20,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import r2_score, mean_absolute_error
 
-plt.style.use('seaborn-v0_8-colorblind')
+#plt.style.use('seaborn-v0_8-colorblind')
 pd.set_option('display.max_rows', 100)
 pd.set_option('display.width', 1000)
 

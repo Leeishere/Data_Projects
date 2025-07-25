@@ -6,8 +6,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+
 import plotly.express as px
 import joblib
 from joblib import dump,load
@@ -124,6 +123,8 @@ class PolyDegreeElasticHypertuner:
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     def fit_data_plot(self):
+        import matplotlib.pyplot as plt
+        import seaborn as sns
         plt.figure(figsize=(8,6))
         x=self.fit_plot_data['poly_degrees']
         sns.barplot(x=x,y=self.fit_plot_data['train_scores'],label='train_scores')
@@ -201,6 +202,8 @@ def get_bias_variance_plots(scores_dict):
     x=[i for i in range(len(scores_dict[plots[0]]))]
     cols=3
     rows=int(np.ceil(len(plots)/cols))
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     plt.figure(figsize=(12,6))
     for i in range(len(plots)):
         #plt.subplot(rows,cols,i+1)
@@ -305,7 +308,8 @@ def leads_sales_plots(data):
 def simple_plots_leads_sales(data):
     demographic_data=data.groupby(['age','gender','interest'],as_index=False)[['Spent','Total_Conversion','pred_Total_Conversion','pred_Approved_Conversion','Approved_Conversion']].sum()
     demographic_data['demographic']=demographic_data.index
-        
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     fig = plt.figure(figsize=(20, 8))
     ax = fig.add_subplot(1,2,1,projection='3d')
     ax2 = fig.add_subplot(1,2,2,projection='3d')
@@ -364,6 +368,8 @@ def get_prob_class(data,numerator,denominator,class_name,num_classes,observed_cl
     return data
 
 def plot_cnts(df,col):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     plot_data=df[col].value_counts()
     sns.barplot(x=plot_data.index,y=plot_data.values)
     plt.show()
@@ -409,6 +415,8 @@ def plot_classification(data,major_title):
     probs=class_probas(data)
     true_bins=np.zeros((data.shape[0],3))
     roc_data=data.copy()
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     roc_data['Three_Conversion_Classes'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
     for i,v in enumerate(['Low','Medium','High']):
         true_bins[:,i]=(roc_data['Three_Conversion_Classes'].astype(str).to_numpy()==v).astype(int)
@@ -466,7 +474,9 @@ def plot_classification(data,major_title):
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-def unseen_data_report():   
+def unseen_data_report():  
+    import matplotlib.pyplot as plt
+    import seaborn as sns 
     plt.figure(figsize=(14,4))
     plt.title('Model Performance on Test Data\n\n')
     plt.subplot(1,2,1)
