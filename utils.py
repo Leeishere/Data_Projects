@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 
-from IPython.display import display
+
 import ipywidgets as widgets
 from ipywidgets import interact
 from ipywidgets import interact_manual
@@ -143,6 +143,7 @@ def give_numeric_lables(data):
 #-----------------------------------------------------------------------------------------------------------------------------
 
 def campaign_overview(data):
+    from IPython.display import display
     scope_plot_data=data[['xyz_campaign_id','Approved_Conversion','Spent','Impressions']].groupby(['xyz_campaign_id'], #,'ROAS','RevenuePerMille'
     as_index=False).agg('mean').rename(columns={'xyz_campaign_id':'Campaign',
     'Approved_Conversion':'Average Number Of Conversions','Spent':'Average Expense',
@@ -263,6 +264,7 @@ def paid_and_not(data):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 def metric_evaluation_by_campaign(data):
+    from IPython.display import display
     display(data.groupby(['xyz_campaign_id'])[['ClickThroughRate',
         'ConversionRate', 'CostPerClick', 'CostPerConversion',
         'Conversion_Value','ROAS','RevenuePerMille']].agg('mean').reset_index().rename(columns={'xyz_campaign_id':'Campaign',
@@ -334,7 +336,8 @@ def interactive_interest_roas(data):
     interest_df=interest_df.sort_values(by=['ROAS'],ascending=False)
     interest_df=interest_df=interest_df.reset_index(drop=True)
     @interact
-    def interact_roas_interest(top_n=list(i for i in range(5,41))):        
+    def interact_roas_interest(top_n=list(i for i in range(5,41))):   
+        from IPython.display import display     
         
         display(interest_df[['interest','ROAS']].head(top_n).style.set_table_styles([ 
             #{"selector": "th",       "props": [("background-color", "#2F1B08"), ("color", "white"),("border", "3px solid black")]},  # Headers
@@ -427,7 +430,8 @@ def create_demographic_dfs(data):
 
 
 def plot_dfs_under15_rows(dfs_dict):
-    plot_dfs=[key for key,val in dfs_dict.items() if val.shape[1]>16 and val.shape[0]>8]    
+    plot_dfs=[key for key,val in dfs_dict.items() if val.shape[1]>16 and val.shape[0]>8] 
+    from IPython.display import display   
     for ax in range(1,len(plot_dfs)+1):
         plot_index=int(ax-1)
         cur_plot=dfs_dict[plot_dfs[plot_index]]
@@ -530,6 +534,7 @@ def get_data():
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 def sales_funnel_plot(data):
+    from IPython.display import display
     border_color="#0E3AA8"
     body_color="#4D7BED"
     display(pd.DataFrame([data[['CostPerMille','ClickThroughRate','ClickToLeadRate','ConversionRate']].mean()], columns=['CostPerMille','ClickThroughRate','ClickToLeadRate','ConversionRate']).style.set_table_styles([{"selector": ".col_heading","props":[("background-color",border_color ), ("color", "white"),("border", "3px solid black")]},  # Headers
