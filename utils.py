@@ -1,15 +1,18 @@
 
 import pandas as pd
 import numpy as np
-
-
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import interact
 from ipywidgets import interact_manual
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from itertools import combinations
 import utils
 import json
@@ -143,7 +146,7 @@ def give_numeric_lables(data):
 #-----------------------------------------------------------------------------------------------------------------------------
 
 def campaign_overview(data):
-    from IPython.display import display
+    
     scope_plot_data=data[['xyz_campaign_id','Approved_Conversion','Spent','Impressions']].groupby(['xyz_campaign_id'], #,'ROAS','RevenuePerMille'
     as_index=False).agg('mean').rename(columns={'xyz_campaign_id':'Campaign',
     'Approved_Conversion':'Average Number Of Conversions','Spent':'Average Expense',
@@ -159,8 +162,7 @@ def campaign_overview(data):
     as_index=False).agg('sum').rename(columns={'xyz_campaign_id':'Campaign',
     'Approved_Conversion':'Total Number Of Conversions','Spent':'Total Expense',
     'Impressions': 'Total Number Of Impressions'})
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     fig=plt.figure(figsize=(10,2.5))
     plt.title('Totals\n',fontsize=18)
     plt.subplot(1,3,1)
@@ -229,8 +231,7 @@ def paid_and_not(data):
     spent=data.groupby('xyz_campaign_id',as_index=False)['Spent'].sum();
     sp_labels=list(f'\n{camp}\n   {spen:,.0f}' if camp == 'campaign_a' else f'{camp}\n   {spen:,.0f}' for camp,spen in zip(spent['xyz_campaign_id'],spent['Spent']));
     sp_sizes=spent['Spent'];
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plt.figure(figsize=(18,7));
 
     plt.subplot(2,3,1);
@@ -264,7 +265,7 @@ def paid_and_not(data):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 def metric_evaluation_by_campaign(data):
-    from IPython.display import display
+
     display(data.groupby(['xyz_campaign_id'])[['ClickThroughRate',
         'ConversionRate', 'CostPerClick', 'CostPerConversion',
         'Conversion_Value','ROAS','RevenuePerMille']].agg('mean').reset_index().rename(columns={'xyz_campaign_id':'Campaign',
@@ -303,8 +304,7 @@ def roas_impact(data):
     interest_df['ROAS']=interest_df['Conversion_Value']/interest_df['Spent']
     interest_df=interest_df.replace([np.inf,-np.inf],np.nan).dropna(axis=0)
     interest_df.sort_values(by=['interest'],ascending=True,inplace=True)
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plt.rcParams['figure.figsize']=(14,4)
 
     plt.subplot(1,2,1)
@@ -337,7 +337,7 @@ def interactive_interest_roas(data):
     interest_df=interest_df=interest_df.reset_index(drop=True)
     @interact
     def interact_roas_interest(top_n=list(i for i in range(5,41))):   
-        from IPython.display import display     
+
         
         display(interest_df[['interest','ROAS']].head(top_n).style.set_table_styles([ 
             #{"selector": "th",       "props": [("background-color", "#2F1B08"), ("color", "white"),("border", "3px solid black")]},  # Headers
@@ -349,8 +349,7 @@ def interactive_interest_roas(data):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 def cost_per_mill_by_campaign(data):
     paid=data.loc[data['Free']=='Paid']
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plt.rcParams['figure.figsize']=(8,2.5)
     plt.gcf().set_facecolor("#416AD2")
     sns.barplot(data=paid,hue='xyz_campaign_id',y='CostPerMille')
@@ -361,8 +360,7 @@ def cost_per_mill_by_campaign(data):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 def per_mille_review(data):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plt.rcParams['figure.figsize']=(12,4)
     plt.title('Paid and Free\nAcross Age and Gender\n.\n')
     plt.gca().set_facecolor("#416AD2")
@@ -431,7 +429,7 @@ def create_demographic_dfs(data):
 
 def plot_dfs_under15_rows(dfs_dict):
     plot_dfs=[key for key,val in dfs_dict.items() if val.shape[1]>16 and val.shape[0]>8] 
-    from IPython.display import display   
+  
     for ax in range(1,len(plot_dfs)+1):
         plot_index=int(ax-1)
         cur_plot=dfs_dict[plot_dfs[plot_index]]
@@ -444,12 +442,10 @@ def plot_dfs_under15_rows(dfs_dict):
             {"selector": ".row_heading", "props": [("background-color", "#0E3AA8"), ("color", "white"),("border", "3px solid black")]},  # Index (row labels)
             {"selector": "td", "props": [("background-color", "#4D7BED"), ("color", "white"),("border", "3px solid black")]}, #table cells
             {"selector": "th.blank","props": [ ("background-color", "#0E3AA8"), ("color", "white"),("text-align", "center"),("border", "3px solid black")]}]))        
-        import matplotlib.pyplot as plt
-        import seaborn as sns
+
         fig=plt.figure(figsize=(20,3))
         top_ntile=np.ceil((cur_plot.shape[0]-40)/cur_plot.shape[0]*100) if cur_plot.shape[0]>40 else 0
-        import matplotlib.pyplot as plt
-        import seaborn as sns
+
         pct=np.percentile(cur_plot['RevenuePerMille'],top_ntile)
         cur_plot1=cur_plot.loc[(cur_plot['RevenuePerMille']>pct)]
         y=cur_plot1['RevenuePerMille']
@@ -534,7 +530,7 @@ def get_data():
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 def sales_funnel_plot(data):
-    from IPython.display import display
+    
     border_color="#0E3AA8"
     body_color="#4D7BED"
     display(pd.DataFrame([data[['CostPerMille','ClickThroughRate','ClickToLeadRate','ConversionRate']].mean()], columns=['CostPerMille','ClickThroughRate','ClickToLeadRate','ConversionRate']).style.set_table_styles([{"selector": ".col_heading","props":[("background-color",border_color ), ("color", "white"),("border", "3px solid black")]},  # Headers
@@ -553,8 +549,7 @@ def sales_funnel_plot(data):
     fig.show()
 #-------------------------------------------------------------------------------------------------------------------------------------------
 def funnel_by_demographics(data):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     funnel_metrics=['CostPerMille','ClickThroughRate','ClickToLeadRate','ConversionRate']
     plt.figure(figsize=(16,3.5))
     plt.title('Sales Funnel by Age Groups\n\n')
@@ -709,8 +704,7 @@ def get_pred_plots(data):
     plot_data=data.copy()
     plot_data=plot_data.sort_values(by='Spent',ascending=True)
     #plot_data['pred_Approved_Conversion']=round(plot_data['pred_Approved_Conversion'])
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plt.figure(figsize=(20,10))
     plt.subplot(2,1,1)
     sns.scatterplot(plot_data,x='Spent',y='Total_Conversion',label='Total_Conversion',color='blue')

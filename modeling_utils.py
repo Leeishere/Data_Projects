@@ -6,10 +6,16 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
 import pandas as pd
-
-
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from IPython.display import display, HTML
 import joblib
 from joblib import dump,load
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -248,9 +254,7 @@ def make_predictions_pipeline(data,model_info_dict,cap_dict=None):
 
 
 def leads_sales_plots(data):
-    import plotly.express as px
-    import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
+
     
     demographic_data=data.groupby(['age','gender','interest'],as_index=False)[['Spent','Total_Conversion','pred_Total_Conversion','pred_Approved_Conversion','Approved_Conversion']].sum()
     demographic_data['demographic']=demographic_data.index
@@ -309,8 +313,7 @@ def leads_sales_plots(data):
 def simple_plots_leads_sales(data):
     demographic_data=data.groupby(['age','gender','interest'],as_index=False)[['Spent','Total_Conversion','pred_Total_Conversion','pred_Approved_Conversion','Approved_Conversion']].sum()
     demographic_data['demographic']=demographic_data.index
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     fig = plt.figure(figsize=(20, 8))
     ax = fig.add_subplot(1,2,1,projection='3d')
     ax2 = fig.add_subplot(1,2,2,projection='3d')
@@ -369,8 +372,7 @@ def get_prob_class(data,numerator,denominator,class_name,num_classes,observed_cl
     return data
 
 def plot_cnts(df,col):
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     plot_data=df[col].value_counts()
     sns.barplot(x=plot_data.index,y=plot_data.values)
     plt.show()
@@ -416,13 +418,12 @@ def plot_classification(data,major_title):
     probs=class_probas(data)
     true_bins=np.zeros((data.shape[0],3))
     roc_data=data.copy()
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+
     roc_data['Three_Conversion_Classes'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
     for i,v in enumerate(['Low','Medium','High']):
         true_bins[:,i]=(roc_data['Three_Conversion_Classes'].astype(str).to_numpy()==v).astype(int)
-    from sklearn.metrics import roc_curve, auc
-    import matplotlib.pyplot as plt
+    
+   
 
     fpr = {}
     tpr = {}
@@ -431,7 +432,7 @@ def plot_classification(data,major_title):
     for i in range(len(classes)):
         fpr[i], tpr[i], _ = roc_curve(true_bins[:, i], probs[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
-    from IPython.display import display, HTML
+
     display(HTML(f"<p style='font-size:30px;'>{major_title}</p>"))
     plt.figure(figsize=(12,4))
     plt.title("",fontsize=30)
@@ -476,8 +477,7 @@ def plot_classification(data,major_title):
 
 
 def unseen_data_report():  
-    import matplotlib.pyplot as plt
-    import seaborn as sns 
+
     plt.figure(figsize=(14,4))
     plt.title('Model Performance on Test Data\n\n')
     plt.subplot(1,2,1)
@@ -491,9 +491,7 @@ def unseen_data_report():
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def confusion_matrix(data):
-    from sklearn.metrics import confusion_matrix
-    import seaborn as sns
-    import matplotlib.pyplot as plt
+
     plot_data=data.copy()
     plot_data['3_Class_Predict'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
     plot_data['Three_Conversion_Classes'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
@@ -511,7 +509,7 @@ def confusion_matrix(data):
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def parallel_plot(data):
-    import plotly.express as px
+
     plot_data=data.copy()    
     plot_data['3_Class_Predict'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
     plot_data['Three_Conversion_Classes'].replace(('0','330','670'),('Low','Medium','High'),inplace=True)
