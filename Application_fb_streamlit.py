@@ -3,9 +3,7 @@ import numpy as np
 import pandas as pd
 #import seaborn as sns
 #import matplotlib.pyplot as plt
-import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+
 import streamlit as st
 import warnings
 warnings.filterwarnings('ignore')
@@ -60,8 +58,8 @@ def grouped_metrics(df=full_data):
 
 @st.cache_data
 def leads_sales_plots(demographic_data=full_data):
-    import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
+    #import plotly.graph_objects as go
+    #from plotly.subplots import make_subplots
 
     lead_model_info=joblib.load('lead_prediction_model_info.joblib')
     demographic_data=modeling_utils.make_predictions_pipeline(demographic_data,lead_model_info,{})

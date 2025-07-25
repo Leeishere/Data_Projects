@@ -7,7 +7,7 @@ from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
 import pandas as pd
 
-import plotly.express as px
+
 import joblib
 from joblib import dump,load
 
@@ -248,6 +248,7 @@ def make_predictions_pipeline(data,model_info_dict,cap_dict=None):
 
 
 def leads_sales_plots(data):
+    import plotly.express as px
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
     
