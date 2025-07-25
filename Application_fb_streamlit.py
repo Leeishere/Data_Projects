@@ -5,8 +5,7 @@ import pandas as pd
 #import matplotlib.pyplot as plt
 
 import streamlit as st
-import warnings
-warnings.filterwarnings('ignore')
+
 from itertools import combinations
 import utils
 import modeling_utils
