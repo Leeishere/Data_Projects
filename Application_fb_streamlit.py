@@ -41,7 +41,9 @@ full_data=load_data()
 @st.cache_data
 def grouped_metrics(df=full_data):    
     frame=['age','gender','interest']
-    metric=['Clicks','Impressions','Approved_Conversion','Total_Conversion','Spent']
+    approved_conversion_model_info=joblib.load('approved_conversion_model_info.joblib')
+    df=modeling_utils.make_predictions_pipeline(df,approved_conversion_model_info,{})
+    metric=['Clicks','Impressions','Approved_Conversion','Total_Conversion','Spent','pred_Approved_Conversion']
     df=df.groupby(frame,as_index=False)[metric].sum()
     size_df=df.groupby(frame,as_index=False).size().rename(columns={'size':'NumObservations'})
     df=pd.merge(df,size_df,on=frame)
@@ -108,14 +110,14 @@ def leads_sales_plots(demographic_data=full_data):
         height=1200, width=600,
         title_text="Plot_One:Leads; Plot_Two: Sales",
         scene=dict(
-            xaxis_title='Spent',
-            yaxis_title='Demographic Combinations',
-            zaxis_title='Leads'
+            xaxis_title='X - Spent',
+            yaxis_title='Y - Demographic Combinations',
+            zaxis_title='Z - Leads'
         ),
         scene2=dict(
-            xaxis_title='Spent',
-            yaxis_title='Demographic Combinations',
-            zaxis_title='Sales'
+            xaxis_title='X - Spent',
+            yaxis_title='Y - Demographic Combinations',
+            zaxis_title='Z - Sales'
         )
     )
 
@@ -131,24 +133,29 @@ def hint_plot():
     key=key.reset_index(drop=True)  
     key['age']=key['age'].replace((3.0,4.5,3.5,4.0),('30-34','45-49','35-39','40-44'))
     key['gender']=key['gender'].replace((2,1),('M','F'))
-    key['ROAS']=key['ROAS'].round(2)          
+    
+    key=key.loc[(key['pred_Approved_Conversion']==0)|(key['Spent']>0)]
+    key['SalesPerDollar']=key['pred_Approved_Conversion']/key['Spent'].replace(0,np.nan)
+    key['SalesPerDollar']=round(key['SalesPerDollar'].fillna(0),4)
+    
+
 
     top_ntile=np.ceil((key.shape[0]-30)/key.shape[0]*100) if key.shape[0]>30 else 0
-    pct=np.percentile(key['ROAS'],top_ntile)
-    cur_plot1=key.loc[(key['ROAS']>pct)]
+    pct=np.percentile(key['SalesPerDollar'],top_ntile)
+    cur_plot1=key.loc[(key['SalesPerDollar']>pct)]
 
     #fig=plt.figure(figsize=(16,3))
     top_ntile2=np.ceil((cur_plot1.shape[0]-30)/cur_plot1.shape[0]*100) if cur_plot1.shape[0]>30 else 0
-    pct2=np.percentile(cur_plot1['ROAS'],top_ntile2)
-    cur_plot1=cur_plot1.loc[(cur_plot1['ROAS']>pct2)]
-    y2=cur_plot1['ROAS']
+    pct2=np.percentile(cur_plot1['SalesPerDollar'],top_ntile2)
+    cur_plot1=cur_plot1.loc[(cur_plot1['SalesPerDollar']>pct2)]
+    y2=cur_plot1['SalesPerDollar']
     mn2=y2.min()
            
-    st.markdown(f'Demographics - ROAS - top {100-top_ntile2}% - ROAS > {round(mn2,2)}' if cur_plot1.shape[0]>30 else f'Demographic - ROAS')
-    st.bar_chart(data=cur_plot1,  x=None, y='ROAS', x_label=None, 
-                 y_label='ROAS', color=None, horizontal=False, 
+    st.markdown(f'Demographics - SalesPerDollar - top {100-top_ntile2}% - SalesPerDollar > {round(mn2,2)}' if cur_plot1.shape[0]>30 else f'Demographic - SalesPerDollar')
+    st.bar_chart(data=cur_plot1,  x=None, y='SalesPerDollar', x_label=None, 
+                 y_label='SalesPerDollar', color=None, horizontal=False, 
                  stack=None, width=None, height=None, use_container_width=True)
-    st.dataframe(key[['age','gender','interest','ROAS']].T)  
+    st.dataframe(key[['age','gender','interest','SalesPerDollar']].T)  
 
 @st.cache_data
 def disp_img():
@@ -222,7 +229,7 @@ def load_data_process_predictions(newer_data,older_data=pd.DataFrame()):
 
 
 # Sidebar for campaign selection
-st.sidebar.header("🎯 Campaign Builder")
+st.sidebar.header("Campaign Builder")
 st.sidebar.markdown("Select parameters for your campaign:")
 
 # Campaign selection inputs
@@ -309,7 +316,7 @@ with col2:
 # Display saved campaigns
 if len(st.session_state.age_inputs) > 0:
     st.markdown("---")
-    st.subheader(f"({len(st.session_state.age_inputs)} Saved Mini-Campaigns)")
+    st.subheader(f"({len(st.session_state.age_inputs)} Saved Subcampaigns)")
     
     # Create DataFrame from saved selections
     campaigns_df = pd.DataFrame({
@@ -334,26 +341,30 @@ if len(st.session_state.age_inputs) > 0:
     # Display the table
     st.table(campaigns_df)
     
-    revenue_per_sale=100
+    revenue_per_sale=55
 
     # Summary metrics
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col2_5, col3, col4 = st.columns(5)
     
     with col1:
         total_spend = sum(st.session_state.spend_inputs)
         st.metric("Total Spend", f"${total_spend:,}")
 
-    with col2:
+    with col3:
         avg_spend = total_spend / len(st.session_state.spend_inputs)
         st.metric("Avg Spend", f"${avg_spend:.0f}")
     
-    with col3:
+    with col2:
         expected_revenue = int(plot_data['pred_Approved_Conversion'].sum()*revenue_per_sale)
         st.metric("Expected Revenue", f"${expected_revenue:,}")
     
     with col4:
         expected_avg_rev = int(plot_data['pred_Approved_Conversion'].mean()*revenue_per_sale)
         st.metric("Expected Average Revenue", f"${expected_avg_rev:.0f}")
+
+    with col2_5:
+        recent_gain_loss = int((plot_data.loc[plot_data.index[-1:],'pred_Approved_Conversion']*revenue_per_sale)-plot_data.loc[plot_data.index[-1:],'Spent'])
+        st.metric("Most-Recent Subcampaign", f"${recent_gain_loss}")
     
 
 
