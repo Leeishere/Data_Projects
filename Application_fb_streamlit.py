@@ -240,18 +240,19 @@ age_cat = st.sidebar.selectbox(
     placeholder="Choose age group..."
 )
 
-interest_cat = st.sidebar.selectbox(
-    label="🎯 Select an Interest Category",
-    options=tuple([i for i in sorted(list(full_data['interest'].unique()))]),
-    index=None,
-    placeholder="Choose interest..."
-)
 
 gender_cat = st.sidebar.selectbox(
     label="👥 Select a Gender",
     options=('M', 'F'),
     index=None,
     placeholder="Choose gender..."
+)
+
+interest_cat = st.sidebar.selectbox(
+    label="🎯 Select an Interest Category",
+    options=tuple([i for i in sorted(list(full_data['interest'].unique()))]),
+    index=None,
+    placeholder="Choose interest..."
 )
 
 spend_values = tuple([i for i in range(50, 351, 50)])
@@ -364,7 +365,8 @@ if len(st.session_state.age_inputs) > 0:
 
     with col2_5:
         recent_gain_loss = int((plot_data.loc[plot_data.index[-1:],'pred_Approved_Conversion']*revenue_per_sale)-plot_data.loc[plot_data.index[-1:],'Spent'])
-        st.metric("Most-Recent Subcampaign", f"${recent_gain_loss}")
+        side_of_zero="-" if recent_gain_loss<0 else "+"
+        st.metric("Most-Recent Subcampaign", f"{side_of_zero}${abs(recent_gain_loss)}")
     
 
 
