@@ -45,7 +45,7 @@ def neighbor_fillna(sortable_features,dataframe,window_size=16,nan_fill_columns=
         else:greater_rows=d_a_t_a_f_r.iloc[aual_index+1:,:].shape[0]              #manually filter the index
         return lesser_rows>1 and greater_rows>1
 
-    dataframe['sort_col']=pd.rolling().count()
+    #dataframe['sort_col']=pd.iloc[:,0].expanding(axis=0).count()# abandoned attempt to preserve index
 
     ###try window_siz>3 accept as   ### in order to ensure it is over 3
     null_counts=dataframe.isnull().sum()
@@ -276,4 +276,5 @@ def plot_pred(data,target,pred,plot_size=3):
         plt.xlabel(f'{plot}')    
     plt.tight_layout()
     plt.show()
+
 
