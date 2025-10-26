@@ -32,7 +32,7 @@ def cap_max_w_nan(data,to_cap={'column_name':'maximum value'}):
 def neighbor_fillna(sortable_features,dataframe,window_size=16,nan_fill_columns=None,truncate_map=None):
     '''
     (sortable_features,dataframe,window_size=16,nan_fill_columns=None,truncate_map=None)
-    rough approximation based on enwighted neighbors
+    rough approximation based on unwighted neighbors
     returns dataframe with a new index    
     '''
 
@@ -276,3 +276,4 @@ def plot_pred(data,target,pred,plot_size=3):
         plt.xlabel(f'{plot}')    
     plt.tight_layout()
     plt.show()
+
