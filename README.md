@@ -1,49 +1,94 @@
 # Data Projects
 
-Data is not included in this repository because datasets used for coursework often belong to the education institute or course provider.
+Data is not included in this repository because datasets used for often belong SkillArbitrage: the course provider.
 
-This repository collects notebooks completed while studying data analysis, machine learning, deep learning, time series, and data cleaning. The notebooks were completed with varying levels of instructor direction, so they should be read as coursework artifacts rather than uniform independent production projects.
+# Data Science, Machine Learning & AI 
 
-## Contents
+## About
 
-### Machine Learning
+I completed the Executive Program in Data Science & AI through SkillArbitrage, an instructor-led program focused on analytics, machine learning, artificial intelligence, statistics, business intelligence, and data-driven decision making. The program combined technical training with hands-on project development across the data lifecycle.
 
-- `Advertising_LinearRegression.ipynb`
-- `breast_cancer.ipynb`
-- `CaliHousing_LinearRegression.ipynb`
-- `fishDataML.ipynb`
-- `Leland_Lee_Mesford_Cancer_Detection.ipynb`
-- `Leland_Mesford_Medical_Exlpense_Prediction.ipynb`
-- `LM_crop_optimization.ipynb`
-- `LM_cust_seg_eng.ipynb`
-- `LM_customer_value.ipynb`
+This repository contains selected notebooks and projects that demonstrate my ability to:
 
-### Deep Learning
+* Analyze and clean complex datasets
+* Build machine learning solutions
+* Create business-focused dashboards and reports
+* Perform statistical analysis and hypothesis testing
+* Communicate findings through data visualization
+* Develop reusable analytical tools and workflows  
 
-- `Boston_Housing.ipynb`
-- `d_learning_imdb_keras.ipynb`
-- `lm_CestXRays.ipynb`
-- `mnist.ipynb`
-- `Reuters_Classification.ipynb`
 
-### Exploritory Data Analysis
+---
 
-- `17. Homework.ipynb`
-- `Lee_Mesford_Facebook_Ads.ipynb`
-- `Leland_Mesford_Player_Performance_Reviewer_Homework.ipynb`
-- `Leland_Mesford_Startups_Case_Study_and_Analisys.ipynb`
 
-### Timeseries
+## Program Information
 
-- `timeseries-expsmooth.ipynb`
+Executive Program in Data Science & AI
+SkillArbitrage
 
-### Data Cleaning
+Program topics included:
 
-- `DataCampCaliSmog_8hr_prep_time.ipynb`
-- `lm_naukri_cleaning.ipynb`
+* Python for Data Science
+* Object-Oriented Programming
+* SQL & Database Analytics
+* Statistics & Probability
+* Regression Analysis
+* Forecasting
+* Data Visualization
+* Machine Learning
+* NLP
+* Deep Learning Fundamentals
+* Recommendation Systems
+* Time Series Analysis
 
-_
+Program Overview:
+https://skillarbitra.ge/course/executive-program-in-data-science--ai-us  
 
-_
 
-_
+---
+
+
+## Technical Skills
+
+### Programming & Analytics
+
+* Python
+* SQL
+* MySQL
+* Excel
+* Pandas
+* NumPy
+* Scikit-learn
+
+### Data Visualization
+
+* Tableau
+* Power BI
+* Excel Dashboards
+* Python Visualization Libraries
+
+### Statistics & Machine Learning
+
+* Hypothesis Testing
+* Probability
+* Regression Analysis
+* Forecasting
+* Feature Engineering
+* Model Evaluation
+* Regularization Techniques
+* Classification Models
+* Clustering Methods
+* Tree-Based Models
+* Boosting Algorithms
+* Recommendation Systems
+
+### Advanced Topics
+
+* Time Series Analysis
+* Natural Language Processing (NLP)
+* Deep Learning Fundamentals
+* Machine Learning Mathematics
+* Semantic Vectors
+* Word Embeddings
+
+
