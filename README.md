@@ -1,6 +1,6 @@
 # Data Projects
 
-Data is not included in this repository because datasets used for often belong SkillArbitrage: the course provider.
+Data is not included in this repository because the datasets often belong SkillArbitrage: the course provider.
 
 # Data Science, Machine Learning & AI 
 
@@ -10,23 +10,20 @@ I completed the Executive Program in Data Science & AI through SkillArbitrage, a
 
 This repository contains selected notebooks and projects that demonstrate my ability to:
 
-* Analyze and clean complex datasets
-* Build machine learning solutions
-* Create business-focused dashboards and reports
-* Perform statistical analysis and hypothesis testing
-* Communicate findings through data visualization
-* Develop reusable analytical tools and workflows  
+* Analyze and clean complex datasets  
+* Build machine learning solutions  
+* Communicate findings through data visualization  
 
 
 ---
 
 
-## Program Information
+## Program Information  
 
-Executive Program in Data Science & AI
-SkillArbitrage
+Executive Program in Data Science & AI  
+SkillArbitrage  
 
-Program topics included:
+Program topics included:  
 
 * Python for Data Science
 * Object-Oriented Programming
@@ -58,7 +55,8 @@ https://skillarbitra.ge/course/executive-program-in-data-science--ai-us
 * Excel
 * Pandas
 * NumPy
-* Scikit-learn
+* Scikit-learn   
+* Tensorflow.Keras
 
 ### Data Visualization
 
