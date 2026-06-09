@@ -1,6 +1,6 @@
 # Data Projects
 
-Data is not included in this repository because the datasets often belong SkillArbitrage: the course provider.
+Data is not included in this repository because the datasets often belong to SkillArbitrage, the course provider.
 
 # Data Science, Machine Learning & AI 
 
@@ -56,7 +56,7 @@ https://skillarbitra.ge/course/executive-program-in-data-science--ai-us
 * Pandas
 * NumPy
 * Scikit-learn   
-* Tensorflow.Keras
+* TensorFlow/Keras
 
 ### Data Visualization
 
@@ -88,5 +88,4 @@ https://skillarbitra.ge/course/executive-program-in-data-science--ai-us
 * Machine Learning Mathematics
 * Semantic Vectors
 * Word Embeddings
-
 
